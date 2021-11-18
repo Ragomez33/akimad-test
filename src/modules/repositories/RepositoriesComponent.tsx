@@ -5,7 +5,7 @@ import { fetchRepositoriesByUser } from './repositories-actions';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { useSubscription } from '@cobuildlab/react-simple-state';
-import { onFetchRepositoriesByUser } from './repositores-events';
+import { onFetchRepositoriesByUser,onErrorFetchRepositoriesByUser } from './repositores-events';
 import { Repositories } from './repositores-models';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import {useNavigate} from 'react-router-dom';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { toast } from 'react-toastify';
 
 
 const useStyles = makeStyles({
@@ -47,11 +48,13 @@ export const RepositoriesComponent: React.FC = () => {
             fetchRepositoriesByUser(username);
         }
     }, [username]);
-    useSubscription( onFetchRepositoriesByUser,(state) => {
-        console.log(state);
+    useSubscription(onFetchRepositoriesByUser,(state) => {
         if(state){
             setIsRepos(state);
         }
+    });
+    useSubscription(onErrorFetchRepositoriesByUser,(state) => {
+        toast.error('Network error');
     });
     const onClickBack = () => {
         navigate(`/users-details/${urlParams.username}`);
